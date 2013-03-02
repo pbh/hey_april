@@ -7,10 +7,12 @@ __doc__
 April is a simple (read: extremely limited) composable template system.
 Its honestly probably not any better than using a different templating
 system, but it's a lot simpler.
- April assumes you're going to use Bootstrap, and it comes with its own
+
+April assumes you're going to use Bootstrap, and it comes with its own
 Bootstrap bundled in package_data.  (You can use copy_assets to copy it
 somewhere appropriate.)
- Usually, you'll end up doing something like:
+
+Usually, you'll end up doing something like:
 
 .. code:: python
 
