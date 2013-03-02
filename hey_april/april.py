@@ -4,7 +4,49 @@
     hey_april.*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    SKEL
+    April is a simple (read: extremely limited) composable template system.
+    Its honestly probably not any better than using a different templating
+    system, but it's a lot simpler.
+
+    April assumes you're going to use Bootstrap, and it comes with its own
+    Bootstrap bundled in package_data.  (You can use copy_assets to copy it
+    somewhere appropriate.)
+
+    Usually, you'll end up doing something like:
+    
+    .. code:: python
+    
+     b_int1 = hey_april.BSSkeleton(
+     'An Exciting Page Title',
+     'Some Corner Text',
+     '',
+     [
+         hey_april.BSSection(
+             'Section 1', 'The second section...', 'Section 1', 'sec1',
+             [
+                 hey_april.BSPara('this is the first section')
+                 ]
+             ),
+         hey_april.BSSection(
+             'Section 2', 'Another section!', 'Section 2', 'sec2',
+             [
+                 hey_april.BSTwoUp(
+                     hey_april.BSHTML('foo'),
+                     hey_april.BSHTML('bar')
+                     )
+                 ]
+             ),
+         hey_april.BSSection(
+             'Section 3', 'The CSV!', 'Section 3', 'sec3',
+             [
+                 hey_april.BSCSVTable(
+                     'txt/scores.csv'
+                     )
+                 ]
+             )
+         ],
+     'https://something.com'
+     )
 
     :copyright: (c) 2013 by oDesk Corporation.
     :license: BSD, see LICENSE for more details.
@@ -44,22 +86,33 @@ def csv_to_bootstrap_table_html(csv_s_with_header):
 
 
 class HTMLable(object):
+    """
+    HTMLable is the base class for pretty much everything in April.
+
+    HTMLables can turn themselves into HTML (via to_html) and have 
+    zero or more children.
+    """
     def __init__(self):
         self._children = []
 
     def to_html(self):
+        'Return an HTML version of this object (NotImplemented for base HTMLable).'
         raise NotImplementedError()
 
     def get_children(self):
+        'Get children of this HTMLable.'
         return self._children
 
     def add_child(self, child):
+        'Add a child HTMLable to this HTMLable.'
         self._children.append(child)
 
     def add_children(self, children):
+        'Add zero or more HTMLable children to this HTMLable.'
         self._children.extend(children)
 
     def _get_possible_children(self, maybe_has_htmlables):
+        'Utility for supporting list, tuple, or HTMLable for some methods.'
         if isinstance(maybe_has_htmlables, HTMLable):
             return [maybe_has_htmlables]
         elif (isinstance(maybe_has_htmlables, types.ListType) or 
@@ -74,6 +127,7 @@ class HTMLable(object):
             self._get_possible_children(maybe_has_htmlables))
  
     def _coerce_to_s(self, htmlable_string_or_list):
+        'Utility for demanding a string (vs __str__ or __repr__).'
         if isinstance(htmlable_string_or_list, types.StringTypes):
             return htmlable_string_or_list
         
@@ -88,13 +142,22 @@ class HTMLable(object):
 
 
 class BSHTMLable(HTMLable):
+    """
+    A base class for HTMLables that use the Bootstrap framework.
+
+    The main difference vs HTMLable is that we assume that there will be
+    zero or more navbar links.  Each BSHTMLable can produce its own navbar
+    links and those of its children.
+    """
     def __init__(self):
         super(BSHTMLable, self).__init__()
 
     def my_navbar_links(self):
+        'What navbar links does this BSHTMLable want to add?'
         return []
 
     def get_navbar_links(self):
+        'What are the navbar links of me and my children?'
         l = []
         
         for c in self.get_children():
@@ -106,6 +169,18 @@ class BSHTMLable(HTMLable):
 
 
 class BSSkeleton(BSHTMLable):
+    """
+    A skeleton that contains the rest of a page.
+
+    BSSkeleton is usually a top level container HTMLable that holds other
+    HTMLables.  It loads assets, has a page title, head and corner, and has
+    an HTMLable or list of HTMLables as its body.
+
+    You can put assets wherever you want, so BSSkeleton allows you to specify
+    an asset_prefix where assets will be searched for by the browser.
+    (We don't check that this actually exists, we just put it into the
+    template.)
+    """
     def __init__(self, title, corner, head, body, asset_prefix, related=None):
         super(BSSkeleton, self).__init__()
 
@@ -140,6 +215,7 @@ class BSSkeleton(BSHTMLable):
 
 
 class BSHTML(BSHTMLable):
+    'A simple pass-through, anything you pass will be directly added to the HTML.'
     def __init__(self, html):
         super(BSHTML, self).__init__()
         self._html = html
@@ -149,6 +225,15 @@ class BSHTML(BSHTMLable):
 
 
 class BSSection(BSHTMLable):
+    """
+    An HTMLable representing a section div.
+
+    Sections have a title and subtitle which are both visible.
+    They also have a name, used in navbar links.
+    They have an anchor which is used in the navbar links but not shown.
+    Lastly, a section can have zero or more child HTMLables representing
+    the content of the section.
+    """
     def __init__(self, title, subtitle, name, html_id, children):
         super(BSSection, self).__init__()
         self._title = title
@@ -173,6 +258,7 @@ class BSSection(BSHTMLable):
 
 
 class BSTwoUp(BSHTMLable):
+    'A BSTwoUp shows two BSHTMLables side-by-side.'
     def __init__(self, left_children, right_children):
         super(BSTwoUp, self).__init__()
         self._left_children = left_children
@@ -191,6 +277,7 @@ class BSTwoUp(BSHTMLable):
 
 
 class BSImg(BSHTMLable):
+    'A BSImg is a BSHTMLable for an HTML img tag.'
     def __init__(self, src, link=None, full_width=False):
         super(BSImg, self).__init__()
         self._src = src
@@ -212,6 +299,7 @@ class BSImg(BSHTMLable):
 
 
 class BSPara(BSHTMLable):
+    'A BSPara is a BSHTMLable for an HTML p tag.'
     def __init__(self, sentences_str):
         super(BSPara, self).__init__()
         self._sentences_str = sentences_str
@@ -221,6 +309,7 @@ class BSPara(BSHTMLable):
 
 
 class BSCSVTable(BSHTMLable):
+    'A BSCSVTable is an HTMLable that turns CSV output into an HTML table.'
     def __init__(self, fn_abs):
         super(BSCSVTable, self).__init__()
         self._fn_abs = fn_abs
@@ -230,6 +319,7 @@ class BSCSVTable(BSHTMLable):
 
 
 class BSPre(BSHTMLable):
+    'A BSPre is a BSHTMLable for the HTML pre tag.'
     def __init__(self, preformatted_str):
         super(BSPre, self).__init__()
         self._preformatted_str = preformatted_str
@@ -239,6 +329,7 @@ class BSPre(BSHTMLable):
 
 
 class BSSQLCode(BSHTMLable):
+    'A BSSQLCode is a BSHTMLable that formats SQL code.'
     def __init__(self, sql_str):
         super(BSSQLCode, self).__init__()
         self._sql_str = sql_str
@@ -248,6 +339,13 @@ class BSSQLCode(BSHTMLable):
 
 
 def copy_assets(dest_dir, april_asset_dir_name='april_assets'):
+    """
+    Copy the April assets to a directory.
+
+    This function copies assets from the package_data of april to your destination
+    directory dest_dir.  It will copy to one directory within dest_dir, which is
+    specified as dest_dir/april_asset_dir_name.
+    """
     asset_dir = os.path.join(os.path.split(__file__)[0], 'assets')
     out_dir = os.path.join(dest_dir, april_asset_dir_name)
 
