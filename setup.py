@@ -12,6 +12,5 @@ setup(
     long_description=open('README.rst').read(),
     install_requires=[
         'jinja2',
-        #'hey_dl',
     ]
 )
