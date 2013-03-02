@@ -15,6 +15,7 @@ import types
 import os
 import csv
 import StringIO
+import shutil
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 _TEMPLATE_PATH = os.path.join(_ROOT, 'templates')
@@ -105,13 +106,14 @@ class BSHTMLable(HTMLable):
 
 
 class BSSkeleton(BSHTMLable):
-    def __init__(self, title, corner, head, body, related=None):
+    def __init__(self, title, corner, head, body, asset_prefix, related=None):
         super(BSSkeleton, self).__init__()
 
         self._title = title
         self._corner = corner
         self._head = head
         self._body = body
+        self._asset_prefix = asset_prefix
         self._related = []
 
         if related is not None:
@@ -132,6 +134,7 @@ class BSSkeleton(BSHTMLable):
             corner_name=self._corner,
             rest_of_body=self._coerce_to_s(self._body),
             navbar_id_name_pairs=navbar_id_name_pairs,
+            asset_prefix=self._asset_prefix,
             related_pairs=self._related
             )
 
@@ -243,3 +246,9 @@ class BSSQLCode(BSHTMLable):
     def to_html(self):
         return '<pre class="prettyprint linenums lang-sql">%s</pre>' % self._sql_str
 
+
+def copy_assets(dest_dir, april_asset_dir_name='april_assets'):
+    asset_dir = os.path.join(os.path.split(__file__)[0], 'assets')
+    out_dir = os.path.join(dest_dir, april_asset_dir_name)
+
+    shutil.copytree(asset_dir, out_dir)

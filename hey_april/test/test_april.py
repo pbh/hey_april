@@ -1,8 +1,13 @@
 import unittest2
 import hey_dl
 import hey_april
+import warnings
+import os
 
 from bs4 import BeautifulSoup
+
+warnings.filterwarnings("ignore", "tempnam", RuntimeWarning)
+warnings.filterwarnings("ignore", "tmpnam", RuntimeWarning)
 
 class AprilTestCase(unittest2.TestCase):
     def setUp(self):
@@ -13,13 +18,21 @@ class AprilTestCase(unittest2.TestCase):
         pass
 
     def test_blank_skel(self):
-        bskel = hey_april.BSSkeleton('my title', 'some text', '', '')
+        bskel = hey_april.BSSkeleton('my title', 'some text', '', '', 'https://test.test')
 
         soup = BeautifulSoup(bskel.to_html())
 
         self.assertEqual(len(soup.select('.navbar')), 1)
         self.assertEqual(soup.title.string, 'my title')
-        
+
+    def test_skel_assets(self):
+        bskel = hey_april.BSSkeleton('my title', 'some text', '', '', 'https://test.test')
+        skel_html = bskel.to_html()
+
+        soup = BeautifulSoup(skel_html)
+        self.assertTrue(
+            soup.select('link')[0]['href'].startswith('https://test.test/'))
+
     def test_html_passthru(self):
         b1 = hey_april.BSHTML('foo')
         b2 = hey_april.BSHTML('<div>bar</div>')
@@ -134,7 +147,8 @@ class AprilTestCase(unittest2.TestCase):
                             )
                         ]
                     )
-                ]
+                ],
+            'https://test.test'
             )
 
         soup = BeautifulSoup(b_int1.to_html())
@@ -142,4 +156,13 @@ class AprilTestCase(unittest2.TestCase):
         self.assertEqual(len(soup.select('section')), 3) # we're expecting 3 sections
         self.assertEqual(len(soup.select('tr')), 5)
         self.assertEqual(len(soup.select('li')), 4) # we're expecting 4 navbar entries
+
+    def test_copy_assets(self):
+        out_dir = os.tempnam('/tmp/')
+        hey_april.copy_assets(out_dir, 'assets')
+
+        self.assertTrue(
+            os.path.isfile(
+                os.path.join(out_dir, 'assets', 'bootstrap-2.2.2',
+                             'css', 'bootstrap.css')))
 
