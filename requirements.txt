@@ -1,0 +1,5 @@
+unittest2
+mock
+jinja2
+beautifulsoup4
+https://github.com/pbh/hey_dl/zipball/master

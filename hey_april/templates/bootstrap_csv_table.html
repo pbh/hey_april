@@ -1,0 +1,19 @@
+<table class="table table-striped table-bordered table-condensed">
+  <thead>
+    <tr>
+      {% for k in field_names %}
+        <th>{{ k }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in csv_lines %}
+      <tr>
+        {% for k in field_names %}
+        {% set v = d[k] %}
+          <td>{{ v }}</td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
