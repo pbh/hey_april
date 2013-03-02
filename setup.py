@@ -6,7 +6,7 @@ setup(
     author='Paul Heymann',
     author_email='hey_april@heymann.be',
     packages=['hey_april', ],
-    package_data={'hey_april': ['templates/*.html', 'assets/']},
+    package_data={'hey_april': ['templates/*.html', 'assets/*']},
     license='LICENSE.txt',
     description='Hey! April Templating System',
     long_description=open('README.rst').read(),
