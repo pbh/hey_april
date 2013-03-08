@@ -166,3 +166,18 @@ class AprilTestCase(unittest2.TestCase):
                 os.path.join(out_dir, 'assets', 'bootstrap-2.2.2',
                              'css', 'bootstrap.css')))
 
+
+    def test_copy_assets2(self):
+        out_dir = os.tempnam('/tmp/')
+        
+        hey_april.set_defaults(
+            dest_dir=out_dir,
+            april_asset_dir_name='assets')
+
+        hey_april.copy_assets()
+
+        self.assertTrue(
+            os.path.isfile(
+                os.path.join(out_dir, 'assets', 'bootstrap-2.2.2',
+                             'css', 'bootstrap.css')))
+

@@ -65,6 +65,9 @@ _TEMPLATE_PATH = os.path.join(_ROOT, 'templates')
 _template_env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(_TEMPLATE_PATH))
 
+_DEFAULT_ASSET_DEST_DIR = None
+_DEFAULT_ASSET_OUTPUT_DIR_NAME = None
+
 def csv_to_bootstrap_table_html(csv_s_with_header):
     """
     Return the HTML of a table representing the CSV passed as a string.
@@ -337,8 +340,14 @@ class BSSQLCode(BSHTMLable):
     def to_html(self):
         return '<pre class="prettyprint linenums lang-sql">%s</pre>' % self._sql_str
 
+def set_defaults(dest_dir=None, april_asset_dir_name=None):
+    global _DEFAULT_ASSET_DEST_DIR
+    global _DEFAULT_ASSET_OUTPUT_DIR_NAME
 
-def copy_assets(dest_dir, april_asset_dir_name='april_assets'):
+    _DEFAULT_ASSET_DEST_DIR = dest_dir
+    _DEFAULT_ASSET_OUTPUT_DIR_NAME = april_asset_dir_name
+
+def copy_assets(dest_dir=None, april_asset_dir_name=None):
     """
     Copy the April assets to a directory.
 
@@ -346,6 +355,19 @@ def copy_assets(dest_dir, april_asset_dir_name='april_assets'):
     directory dest_dir.  It will copy to one directory within dest_dir, which is
     specified as dest_dir/april_asset_dir_name.
     """
+
+    global _DEFAULT_ASSET_DEST_DIR
+    global _DEFAULT_ASSET_OUTPUT_DIR_NAME
+
+    if dest_dir is None:
+        dest_dir = _DEFAULT_ASSET_DEST_DIR
+
+    if april_asset_dir_name is None:
+        if _DEFAULT_ASSET_OUTPUT_DIR_NAME is not None:
+            april_asset_dir_name = _DEFAULT_ASSET_OUTPUT_DIR_NAME
+        else:
+            april_asset_dir_name = 'april_assets'
+
     asset_dir = os.path.join(os.path.split(__file__)[0], 'assets')
     out_dir = os.path.join(dest_dir, april_asset_dir_name)
 
