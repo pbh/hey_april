@@ -199,6 +199,10 @@ class BSSkeleton(BSHTMLable):
 
         if asset_prefix is not None:
             self._asset_prefix = asset_prefix
+
+        if self._asset_prefix is None:
+            raise RuntimeError(
+                'Asset prefix cannot be None --- set a default or use manual.')
         
         if related is not None:
             self._related = related
