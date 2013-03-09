@@ -25,6 +25,12 @@ class AprilTestCase(unittest2.TestCase):
         self.assertEqual(len(soup.select('.navbar')), 1)
         self.assertEqual(soup.title.string, 'my title')
 
+    def test_default_asset_prefix(self):
+        hey_april.set_default_asset_prefix('https://default.asset')
+        bskel = hey_april.BSSkeleton('my title', 'some text', '', '')
+
+        self.assertTrue('default.asset' in bskel.to_html())
+
     def test_skel_assets(self):
         bskel = hey_april.BSSkeleton('my title', 'some text', '', '', 'https://test.test')
         skel_html = bskel.to_html()
@@ -170,9 +176,8 @@ class AprilTestCase(unittest2.TestCase):
     def test_copy_assets2(self):
         out_dir = os.tempnam('/tmp/')
         
-        hey_april.set_defaults(
-            dest_dir=out_dir,
-            april_asset_dir_name='assets')
+        hey_april.set_default_asset_dest_dir(out_dir)
+        hey_april.set_default_asset_output_dir_name('assets')
 
         hey_april.copy_assets()
 

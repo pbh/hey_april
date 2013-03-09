@@ -67,6 +67,7 @@ _template_env = jinja2.Environment(
 
 _DEFAULT_ASSET_DEST_DIR = None
 _DEFAULT_ASSET_OUTPUT_DIR_NAME = None
+_DEFAULT_ASSET_PREFIX = None
 
 def csv_to_bootstrap_table_html(csv_s_with_header):
     """
@@ -184,16 +185,21 @@ class BSSkeleton(BSHTMLable):
     (We don't check that this actually exists, we just put it into the
     template.)
     """
-    def __init__(self, title, corner, head, body, asset_prefix, related=None):
+    def __init__(self, title, corner, head, body, asset_prefix=None, related=None):
         super(BSSkeleton, self).__init__()
+
+        global _DEFAULT_ASSET_PREFIX
 
         self._title = title
         self._corner = corner
         self._head = head
         self._body = body
-        self._asset_prefix = asset_prefix
+        self._asset_prefix = _DEFAULT_ASSET_PREFIX
         self._related = []
 
+        if asset_prefix is not None:
+            self._asset_prefix = asset_prefix
+        
         if related is not None:
             self._related = related
 
@@ -340,12 +346,17 @@ class BSSQLCode(BSHTMLable):
     def to_html(self):
         return '<pre class="prettyprint linenums lang-sql">%s</pre>' % self._sql_str
 
-def set_defaults(dest_dir=None, april_asset_dir_name=None):
+def set_default_asset_dest_dir(dest_dir):
     global _DEFAULT_ASSET_DEST_DIR
-    global _DEFAULT_ASSET_OUTPUT_DIR_NAME
-
     _DEFAULT_ASSET_DEST_DIR = dest_dir
+
+def set_default_asset_output_dir_name(april_asset_dir_name):
+    global _DEFAULT_ASSET_OUTPUT_DIR_NAME
     _DEFAULT_ASSET_OUTPUT_DIR_NAME = april_asset_dir_name
+
+def set_default_asset_prefix(asset_prefix):
+    global _DEFAULT_ASSET_PREFIX
+    _DEFAULT_ASSET_PREFIX = asset_prefix
 
 def copy_assets(dest_dir=None, april_asset_dir_name=None):
     """
