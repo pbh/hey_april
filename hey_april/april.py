@@ -291,24 +291,28 @@ class BSTwoUp(BSHTMLable):
 
 class BSImg(BSHTMLable):
     'A BSImg is a BSHTMLable for an HTML img tag.'
-    def __init__(self, src, link=None, full_width=False):
+    def __init__(self, src, link=None, full_width=False, center_align=False):
         super(BSImg, self).__init__()
         self._src = src
         self._link = link
         self._full_width = full_width
+        self._center_align = center_align
 
     def to_html(self):
-        full_width_part = ''
-
+        style_part = ''
+        
         if self._full_width:
-            full_width_part = "style='width: 100%'"
-
+            style_part = 'style="width: 100%"'
+        elif self._center_align:
+            style_part = '''style="display: block; margin-left: auto; 
+                            margin-right: auto"'''
+      
         if self._link is not None:
             return '<a href="%s"><img src="%s" %s /></a>' % (
-                self._link, self._src, full_width_part)
+                self._link, self._src, style_part)
         else:
             return '<img src="%s" %s />' % (
-                self._src, full_width_part)
+                self._src, style_part)
 
 
 class BSPara(BSHTMLable):
