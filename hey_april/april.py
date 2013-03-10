@@ -1,57 +1,5 @@
 #!/usr/bin/env python
 
-"""
-    hey_april.*
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    April is a simple (read: extremely limited) composable template system.
-    Its honestly probably not any better than using a different templating
-    system, but it's a lot simpler.
-
-    April assumes you're going to use Bootstrap, and it comes with its own
-    Bootstrap bundled in package_data.  (You can use copy_assets to copy it
-    somewhere appropriate.)
-
-    Usually, you'll end up doing something like:
-    
-    .. code:: python
-    
-     b_int1 = hey_april.BSSkeleton(
-     'An Exciting Page Title',
-     'Some Corner Text',
-     '',
-     [
-         hey_april.BSSection(
-             'Section 1', 'The second section...', 'Section 1', 'sec1',
-             [
-                 hey_april.BSPara('this is the first section')
-                 ]
-             ),
-         hey_april.BSSection(
-             'Section 2', 'Another section!', 'Section 2', 'sec2',
-             [
-                 hey_april.BSTwoUp(
-                     hey_april.BSHTML('foo'),
-                     hey_april.BSHTML('bar')
-                     )
-                 ]
-             ),
-         hey_april.BSSection(
-             'Section 3', 'The CSV!', 'Section 3', 'sec3',
-             [
-                 hey_april.BSCSVTable(
-                     'txt/scores.csv'
-                     )
-                 ]
-             )
-         ],
-     'https://something.com'
-     )
-
-    :copyright: (c) 2013 by oDesk Corporation.
-    :license: BSD, see LICENSE for more details.
-"""
-
 import jinja2
 import types
 import os
@@ -70,6 +18,7 @@ _DEFAULT_ASSET_OUTPUT_DIR_NAME = None
 _DEFAULT_ASSET_PREFIX = None
 
 def csv_to_bootstrap_table_html(csv_s_with_header):
+
     """
     Return the HTML of a table representing the CSV passed as a string.
 
@@ -355,14 +304,17 @@ class BSSQLCode(BSHTMLable):
         return '<pre class="prettyprint linenums lang-sql">%s</pre>' % self._sql_str
 
 def set_default_asset_dest_dir(dest_dir):
+    'Set the default destination to copy assets to.'
     global _DEFAULT_ASSET_DEST_DIR
     _DEFAULT_ASSET_DEST_DIR = dest_dir
 
 def set_default_asset_output_dir_name(april_asset_dir_name):
+    'Set the default name of the asset dir.'
     global _DEFAULT_ASSET_OUTPUT_DIR_NAME
     _DEFAULT_ASSET_OUTPUT_DIR_NAME = april_asset_dir_name
 
 def set_default_asset_prefix(asset_prefix):
+    'Set the default prefix for where to find assets.'
     global _DEFAULT_ASSET_PREFIX
     _DEFAULT_ASSET_PREFIX = asset_prefix
 
