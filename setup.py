@@ -5,6 +5,7 @@ setup(
     version='1.0.5',
     author='Paul Heymann',
     author_email='hey_april@heymann.be',
+    url='http://www.pybrid.com/',
     packages=['hey_april', ],
     package_data={'hey_april':
                   ['templates/*.html',
